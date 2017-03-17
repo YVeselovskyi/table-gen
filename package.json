@@ -1,0 +1,23 @@
+{
+  "name": "memcrab-test",
+  "version": "1.0.0",
+  "description": "Test Task",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Yaroslav Veselovskyi",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "opn": "^4.0.2",
+    "webpack": "^2.2.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-stage-0": "^6.22.0"
+  }
+}
