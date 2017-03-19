@@ -23,7 +23,8 @@ const TableDrawer = {
         sumValues.forEach(i =>{
             let row = document.querySelector(`.row-number-${i.rowId}`);
             let sumCell = document.createElement('td');
-            sumCell.className = `row-sum row-${i.rowId}-sum`;
+            sumCell.className = 'row-sum';
+            sumCell.id = `row-${i.rowId}-sum`;
             sumCell.innerText = i.value;
             row.appendChild(sumCell);
         })
@@ -35,10 +36,23 @@ const TableDrawer = {
         averagesRow.className = 'averages-row';
         averageValues.forEach(i =>{
             let averageValueCell = averagesRow.insertCell(-1);
-            averageValueCell.className = `column-average column-${i.colId}-average`;
+            averageValueCell.className = 'column-average';
+            averageValueCell.id = `column-${i.colId}-average`;
             averageValueCell.innerText = i.value;
         })
     },
+    redrawCell(id){
+        let cell = document.getElementById(id);
+        cell.innerHTML++;
+    },
+    redrawSums(rowNum, value){
+        let rowSum = document.getElementById(`row-${rowNum}-sum`);
+        rowSum.innerHTML = value;
+    },
+    redrawAverages(colNum, value){
+        let colAverage = document.getElementById(`column-${colNum}-average`);
+        colAverage.innerHTML = value;
+    }
 };
 
 export default TableDrawer;

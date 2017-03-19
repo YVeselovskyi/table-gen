@@ -1,6 +1,8 @@
 import TableDrawer from './TableDrawer.js';
 
-console.log(TableDrawer);
+const tableDiv = document.getElementsByClassName('row')[0];
+
+
 const helperFunctions = {
     randomInt: function () {
         return parseInt(Math.floor(100 + Math.random() * 900));
@@ -11,8 +13,6 @@ const regExp = {
     row: /row-\d+/,
     column: /column-\d+/
 };
-
-const tableDiv = document.getElementsByClassName('row')[0];
 
 const TableGenerator = {
     matrix: [],
@@ -62,7 +62,7 @@ const TableGenerator = {
             for (let j = 0; j < this.matrix.length; j++) {
                 columnTotal += this.matrix[j][i].amount
             }
-            currentColAverage.value = +(columnTotal / this.matrix.length).toFixed(2);
+            currentColAverage.value = (columnTotal / this.matrix.length).toFixed(2);
             this.colAverages.push(currentColAverage);
         }
     },
@@ -81,16 +81,19 @@ const TableGenerator = {
         for(let i=0; i<colCellsAmount; i++){
             newColSum+=this.matrix[i][colNum].amount;
         }
-        let newColAverage = +(newColSum/colCellsAmount).toFixed(2);
+        let newColAverage = (newColSum/colCellsAmount).toFixed(2);
         this.colAverages.map(i => {
             i.colId == colNum && (i.value = newColAverage );
         });
     },
 
-    incrementCell(row, col){
+    incrementCell(row, col, id){
         this.matrix[row][col].amount++;
         this.recalculateRowSum(row);
         this.recalculateColAverage(col);
+        TableDrawer.redrawCell(id);
+        TableDrawer.redrawSums(row, this.rowSums[row].value);
+        TableDrawer.redrawAverages(col, this.colAverages[col].value);
     }
 
 };
@@ -116,7 +119,8 @@ let events = {
         for(let i=0; i<allTd.length; i++){
             let colNum = allTd[i].cellIndex;
             let rowNum = allTd[i].parentNode.rowIndex;
-            allTd[i].addEventListener('click', () =>  { TableGenerator.incrementCell(rowNum,colNum) });
+            let cellId = allTd[i].id;
+            allTd[i].addEventListener('click', () =>  { TableGenerator.incrementCell(rowNum,colNum, cellId) });
         }
     }
 };
