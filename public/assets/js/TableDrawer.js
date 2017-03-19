@@ -9,7 +9,7 @@ const TableDrawer = {
             rowNode.className = `row-number-${i}`;
             for (let j = 0; j < row.length; j++) {
                 let cellNode = document.createElement('td');
-                cellNode.className = `row-${i} column-${j}`;
+                cellNode.className = `cell row-${i} column-${j}`;
                 cellNode.id = row[j].id;
                 cellNode.innerText = row[j].amount;
                 rowNode.appendChild(cellNode)
@@ -52,6 +52,9 @@ const TableDrawer = {
     redrawAverages(colNum, value){
         let colAverage = document.getElementById(`column-${colNum}-average`);
         colAverage.innerHTML = value;
+    },
+    highLightPercentage(hoveredCellId){
+        console.log(hoveredCellId);
     }
 };
 

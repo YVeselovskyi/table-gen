@@ -98,7 +98,7 @@ const TableGenerator = {
 
 };
 
-TableGenerator.init(3, 3);
+TableGenerator.init(3,3);
 TableGenerator.calculateRowSum();
 TableGenerator.calculateColAverage();
 
@@ -121,6 +121,7 @@ let events = {
             let rowNum = allTd[i].parentNode.rowIndex;
             let cellId = allTd[i].id;
             allTd[i].addEventListener('click', () =>  { TableGenerator.incrementCell(rowNum,colNum, cellId) });
+            allTd[i].addEventListener('mouseover', () =>  { TableDrawer.highLightClosestCells(cellId) });
         }
     }
 };

@@ -86,7 +86,7 @@ var TableDrawer = {
             rowNode.className = 'row-number-' + i;
             for (var j = 0; j < row.length; j++) {
                 var cellNode = document.createElement('td');
-                cellNode.className = 'row-' + i + ' column-' + j;
+                cellNode.className = 'cell row-' + i + ' column-' + j;
                 cellNode.id = row[j].id;
                 cellNode.innerText = row[j].amount;
                 rowNode.appendChild(cellNode);
@@ -127,6 +127,9 @@ var TableDrawer = {
     redrawAverages: function redrawAverages(colNum, value) {
         var colAverage = document.getElementById('column-' + colNum + '-average');
         colAverage.innerHTML = value;
+    },
+    highLightPercentage: function highLightPercentage(hoveredCellId) {
+        console.log(hoveredCellId);
     }
 };
 
@@ -260,6 +263,9 @@ var events = {
             var cellId = allTd[i].id;
             allTd[i].addEventListener('click', function () {
                 TableGenerator.incrementCell(rowNum, colNum, cellId);
+            });
+            allTd[i].addEventListener('mouseover', function () {
+                _TableDrawer2.default.highLightClosestCells(cellId);
             });
         };
 

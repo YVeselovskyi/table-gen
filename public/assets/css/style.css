@@ -2,6 +2,8 @@ tr{
   margin: 10px 0;
 }
 
+
+
 td{
   text-align: center;
   cursor: pointer;
@@ -13,4 +15,9 @@ td{
   background: #3F51B5;
   color: #fff;
   cursor: default;
+}
+
+.highlighted{
+  background: #009688;
+  color: #fff;
 }
