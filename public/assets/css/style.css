@@ -21,3 +21,7 @@ td{
   background: #009688;
   color: #fff;
 }
+
+.add-button{
+  float: right;
+}

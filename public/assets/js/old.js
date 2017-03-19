@@ -86,3 +86,18 @@ class TableMethodsCreator {
 }
 
 const TableMethods = new TableMethodsCreator();
+
+// let events = {
+//     addCellHandler: function () {
+//         let allTd = [...document.querySelectorAll('td')];
+//         for(let i=0; i<allTd.length; i++){
+//             let colNum = allTd[i].cellIndex;
+//             let rowNum = allTd[i].parentNode.rowIndex;
+//             let cellId = allTd[i].id;
+//             allTd[i].addEventListener('click', () =>  { TableGenerator.incrementCell(rowNum,colNum, cellId) });
+//             //allTd[i].addEventListener('mouseover', () =>  { TableDrawer.highLightPercentage(cellId) });
+//         }
+//     }
+// };
+//
+// events.addCellHandler();

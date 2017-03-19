@@ -94,36 +94,58 @@ const TableGenerator = {
         TableDrawer.redrawCell(id);
         TableDrawer.redrawSums(row, this.rowSums[row].value);
         TableDrawer.redrawAverages(col, this.colAverages[col].value);
+    },
+
+    addRow(){
+        let newRow = [];
+        for(let i=0; i<this.matrix[0].length; i++){
+            newRow.push({
+                id: this.increment++,
+                amount: helperFunctions.randomInt()
+            })
+        }
+        this.matrix.push(newRow);
+        this.rowSums = [];
+        this.colAverages = [];
+        this.calculateRowSum();
+        this.calculateColAverage();
+        TableDrawer.drawNewRow(newRow, this.rowSums[this.rowSums.length-1] , this.colAverages);
     }
 
 };
 
-TableGenerator.init(3,3);
+TableGenerator.init(3,2);
 TableGenerator.calculateRowSum();
 TableGenerator.calculateColAverage();
+
 
 let drawnTable = TableDrawer.drawTable(TableGenerator.matrix);
 
 tableDiv.appendChild(drawnTable);
 
+let addButton = document.createElement('button');
+addButton.className = 'btn btn-default add-button';
+addButton.innerHTML = 'Add';
+addButton.id = 'add-row';
+tableDiv.appendChild(addButton);
+
 
 window.onload = function () {
     TableDrawer.drawRowSums(TableGenerator.rowSums);
     TableDrawer.drawColAverages(TableGenerator.colAverages);
+    document.getElementById('add-row').addEventListener('click', ()=> {TableGenerator.addRow()})
 };
 
 
-let events = {
-    addCellHandler: function () {
-        let allTd = [...document.querySelectorAll('td')];
-        for(let i=0; i<allTd.length; i++){
-            let colNum = allTd[i].cellIndex;
-            let rowNum = allTd[i].parentNode.rowIndex;
-            let cellId = allTd[i].id;
-            allTd[i].addEventListener('click', () =>  { TableGenerator.incrementCell(rowNum,colNum, cellId) });
-            allTd[i].addEventListener('mouseover', () =>  { TableDrawer.highLightClosestCells(cellId) });
-        }
+function hasClass(elem, className) {
+    return elem.className.split(' ').indexOf(className) > -1;
+}
+
+document.addEventListener('click', function (e) {
+    if (hasClass(e.target, 'cell')) {
+        let colNum = e.target.cellIndex;
+        let rowNum = e.target.parentNode.rowIndex;
+        let cellId = e.target.id;
+        e.target.addEventListener('click', () =>  { TableGenerator.incrementCell(rowNum,colNum, cellId) });
     }
-};
-
-events.addCellHandler();
+}, false);

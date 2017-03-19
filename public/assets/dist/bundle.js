@@ -76,14 +76,21 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+
 var TableDrawer = {
+
+    insertAfter: function insertAfter(elem, refElem) {
+        return refElem.parentNode.insertBefore(elem, refElem.nextSibling);
+    },
+
     drawTable: function drawTable(matrix) {
         var tableNode = document.createElement('table');
         tableNode.className = 'table';
         for (var i = 0; i < matrix.length; i++) {
             var row = matrix[i];
             var rowNode = document.createElement('tr');
-            rowNode.className = 'row-number-' + i;
+            rowNode.className = 'table-row row-number-' + i;
             for (var j = 0; j < row.length; j++) {
                 var cellNode = document.createElement('td');
                 cellNode.className = 'cell row-' + i + ' column-' + j;
@@ -128,6 +135,39 @@ var TableDrawer = {
         var colAverage = document.getElementById('column-' + colNum + '-average');
         colAverage.innerHTML = value;
     },
+    drawNewRow: function drawNewRow(newRow, rowSum, columns) {
+
+        var tableRows = document.getElementsByClassName('table-row');
+
+        var lastRow = tableRows[tableRows.length - 1];
+
+        var appendedRow = document.createElement('tr');
+
+        appendedRow.className = 'table-row row-number-' + tableRows.length;
+
+        for (var i = 0; i < newRow.length; i++) {
+            var newRowTd = document.createElement('td');
+            newRowTd.id = newRow[i].id;
+            newRowTd.innerHTML = newRow[i].amount;
+            newRowTd.className = 'cell row-' + tableRows.length;
+            appendedRow.appendChild(newRowTd);
+        }
+
+        var newRowSumTd = document.createElement('td');
+
+        newRowSumTd.innerHTML = rowSum.value;
+        newRowSumTd.className = 'row-sum';
+        newRowSumTd.id = 'row-' + rowSum.rowId + '-sum';
+
+        appendedRow.appendChild(newRowSumTd);
+
+        this.insertAfter(appendedRow, lastRow);
+
+        for (var j = 0; j < columns.length; j++) {
+            var changedColAverage = document.getElementById('column-' + columns[j].colId + '-average');
+            changedColAverage.innerHTML = columns[j].value;
+        }
+    },
     highLightPercentage: function highLightPercentage(hoveredCellId) {
         console.log(hoveredCellId);
     }
@@ -147,8 +187,6 @@ var _TableDrawer = __webpack_require__(0);
 var _TableDrawer2 = _interopRequireDefault(_TableDrawer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var tableDiv = document.getElementsByClassName('row')[0];
 
@@ -237,10 +275,25 @@ var TableGenerator = {
         _TableDrawer2.default.redrawCell(id);
         _TableDrawer2.default.redrawSums(row, this.rowSums[row].value);
         _TableDrawer2.default.redrawAverages(col, this.colAverages[col].value);
+    },
+    addRow: function addRow() {
+        var newRow = [];
+        for (var i = 0; i < this.matrix[0].length; i++) {
+            newRow.push({
+                id: this.increment++,
+                amount: helperFunctions.randomInt()
+            });
+        }
+        this.matrix.push(newRow);
+        this.rowSums = [];
+        this.colAverages = [];
+        this.calculateRowSum();
+        this.calculateColAverage();
+        _TableDrawer2.default.drawNewRow(newRow, this.rowSums[this.rowSums.length - 1], this.colAverages);
     }
 };
 
-TableGenerator.init(3, 3);
+TableGenerator.init(3, 2);
 TableGenerator.calculateRowSum();
 TableGenerator.calculateColAverage();
 
@@ -248,34 +301,34 @@ var drawnTable = _TableDrawer2.default.drawTable(TableGenerator.matrix);
 
 tableDiv.appendChild(drawnTable);
 
+var addButton = document.createElement('button');
+addButton.className = 'btn btn-default add-button';
+addButton.innerHTML = 'Add';
+addButton.id = 'add-row';
+tableDiv.appendChild(addButton);
+
 window.onload = function () {
     _TableDrawer2.default.drawRowSums(TableGenerator.rowSums);
     _TableDrawer2.default.drawColAverages(TableGenerator.colAverages);
+    document.getElementById('add-row').addEventListener('click', function () {
+        TableGenerator.addRow();
+    });
 };
 
-var events = {
-    addCellHandler: function addCellHandler() {
-        var allTd = [].concat(_toConsumableArray(document.querySelectorAll('td')));
+function hasClass(elem, className) {
+    return elem.className.split(' ').indexOf(className) > -1;
+}
 
-        var _loop = function _loop(i) {
-            var colNum = allTd[i].cellIndex;
-            var rowNum = allTd[i].parentNode.rowIndex;
-            var cellId = allTd[i].id;
-            allTd[i].addEventListener('click', function () {
-                TableGenerator.incrementCell(rowNum, colNum, cellId);
-            });
-            allTd[i].addEventListener('mouseover', function () {
-                _TableDrawer2.default.highLightClosestCells(cellId);
-            });
-        };
-
-        for (var i = 0; i < allTd.length; i++) {
-            _loop(i);
-        }
+document.addEventListener('click', function (e) {
+    if (hasClass(e.target, 'cell')) {
+        var colNum = e.target.cellIndex;
+        var rowNum = e.target.parentNode.rowIndex;
+        var cellId = e.target.id;
+        e.target.addEventListener('click', function () {
+            TableGenerator.incrementCell(rowNum, colNum, cellId);
+        });
     }
-};
-
-events.addCellHandler();
+}, false);
 
 /***/ })
 /******/ ]);
