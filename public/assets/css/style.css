@@ -1,5 +1,16 @@
+tr{
+  margin: 10px 0;
+}
+
 td{
   text-align: center;
   cursor: pointer;
   padding: 5px;
+  border: 1px black solid;
+}
+
+.table tr td.row-sum, .table tr td.column-average {
+  background: #3F51B5;
+  color: #fff;
+  cursor: default;
 }

@@ -73,61 +73,187 @@
 "use strict";
 
 
+var _TableDrawer = __webpack_require__(2);
+
+var _TableDrawer2 = _interopRequireDefault(_TableDrawer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+console.log(_TableDrawer2.default);
 var helperFunctions = {
     randomInt: function randomInt() {
         return parseInt(Math.floor(100 + Math.random() * 900));
     }
 };
 
-var TableConstructor = {
+var regExp = {
+    row: /row-\d+/,
+    column: /column-\d+/
+};
+
+var tableDiv = document.getElementsByClassName('row')[0];
+
+var TableGenerator = {
+    matrix: [],
     increment: 0,
-    init: function init(rows, columns) {
-        this.rows = rows;
-        this.columns = columns;
-        this.matrix = this.generateMatrix();
+    rowSums: [],
+    colAverages: [],
+
+    init: function init(rows, cols) {
+        this.matrix = this.generateMatrix(rows, cols);
     },
-    generateMatrix: function generateMatrix() {
+    generateMatrix: function generateMatrix(rows, cols) {
         var arr = [];
-        for (var i = 0; i < this.rows; i++) {
+        for (var i = 0; i < rows; i++) {
             arr[i] = [];
-            for (var j = 0; j < this.columns; j++) {
-                arr[i][j] = { id: this.increment++, amount: helperFunctions.randomInt() };
+            for (var j = 0; j < cols; j++) {
+                arr[i][j] = {
+                    id: this.increment++,
+                    amount: helperFunctions.randomInt()
+                };
             }
         }
         return arr;
     },
-    drawTable: function drawTable(table) {
-        var tableContainer = document.getElementsByClassName('row')[0];
-        var drawnTable = document.createElement('table');
-        var sumOfRow = 0;
-        var tableRow = void 0;
-        var tableData = void 0;
-        var textNode = void 0;
-        var row = void 0,
-            col = void 0;
-
-        drawnTable.className = 'table';
-
-        for (row = 0; row < table.length; row++) {
-            tableRow = document.createElement('tr');
-            for (col = 0; col < table[row].length; col++) {
-                tableData = document.createElement('td');
-                tableData.id = table[row][col].id;
-                textNode = document.createTextNode(table[row][col].amount);
-                tableData.appendChild(textNode);
-                tableRow.appendChild(tableData);
+    calculateRowSum: function calculateRowSum() {
+        for (var i = 0; i < this.matrix.length; i++) {
+            var currentRowSum = {};
+            currentRowSum.rowId = i;
+            for (var j = 0; j < this.matrix[i].length; j++) {
+                if (currentRowSum.value) {
+                    currentRowSum.value += this.matrix[i][j].amount;
+                } else {
+                    currentRowSum.value = this.matrix[i][j].amount;
+                }
             }
-            drawnTable.appendChild(tableRow);
+            this.rowSums.push(currentRowSum);
         }
-        tableContainer.appendChild(drawnTable);
+    },
+    calculateColAverage: function calculateColAverage() {
+        var columns = this.matrix[0].length;
+        for (var i = 0; i < columns; i++) {
+            var currentColAverage = {};
+            currentColAverage.colId = i;
+            var columnTotal = 0;
+            for (var j = 0; j < this.matrix.length; j++) {
+                columnTotal += this.matrix[j][i].amount;
+            }
+            currentColAverage.value = +(columnTotal / this.matrix.length).toFixed(2);
+            this.colAverages.push(currentColAverage);
+        }
+    },
+    recalculateRowSum: function recalculateRowSum(rowNum) {
+        for (var i = 0; i < this.rowSums.length; i++) {
+            if (rowNum == this.rowSums[i].rowId) {
+                this.rowSums[i].value++;
+            }
+        }
+    },
+    recalculateColAverage: function recalculateColAverage(colNum) {
+        var colCellsAmount = this.matrix.length;
+        var newColSum = 0;
+        for (var i = 0; i < colCellsAmount; i++) {
+            newColSum += this.matrix[i][colNum].amount;
+        }
+        var newColAverage = +(newColSum / colCellsAmount).toFixed(2);
+        this.colAverages.map(function (i) {
+            i.colId == colNum && (i.value = newColAverage);
+        });
+    },
+    incrementCell: function incrementCell(row, col) {
+        this.matrix[row][col].amount++;
+        this.recalculateRowSum(row);
+        this.recalculateColAverage(col);
     }
 };
 
-TableConstructor.init(4, 4);
+TableGenerator.init(3, 3);
+TableGenerator.calculateRowSum();
+TableGenerator.calculateColAverage();
 
-var table = TableConstructor.matrix;
+var drawnTable = _TableDrawer2.default.drawTable(TableGenerator.matrix);
 
-TableConstructor.drawTable(table);
+tableDiv.appendChild(drawnTable);
+
+window.onload = function () {
+    _TableDrawer2.default.drawRowSums(TableGenerator.rowSums);
+    _TableDrawer2.default.drawColAverages(TableGenerator.colAverages);
+};
+
+var events = {
+    addCellHandler: function addCellHandler() {
+        var allTd = [].concat(_toConsumableArray(document.querySelectorAll('td')));
+
+        var _loop = function _loop(i) {
+            var colNum = allTd[i].cellIndex;
+            var rowNum = allTd[i].parentNode.rowIndex;
+            allTd[i].addEventListener('click', function () {
+                TableGenerator.incrementCell(rowNum, colNum);
+            });
+        };
+
+        for (var i = 0; i < allTd.length; i++) {
+            _loop(i);
+        }
+    }
+};
+
+events.addCellHandler();
+
+/***/ }),
+/* 1 */,
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var TableDrawer = {
+    drawTable: function drawTable(matrix) {
+        var tableNode = document.createElement('table');
+        tableNode.className = 'table';
+        for (var i = 0; i < matrix.length; i++) {
+            var row = matrix[i];
+            var rowNode = document.createElement('tr');
+            rowNode.className = 'row-number-' + i;
+            for (var j = 0; j < row.length; j++) {
+                var cellNode = document.createElement('td');
+                cellNode.className = 'row-' + i + ' column-' + j;
+                cellNode.id = row[j].id;
+                cellNode.innerText = row[j].amount;
+                rowNode.appendChild(cellNode);
+            }
+            tableNode.appendChild(rowNode);
+        }
+        return tableNode;
+    },
+    drawRowSums: function drawRowSums(sumValues) {
+        sumValues.forEach(function (i) {
+            var row = document.querySelector('.row-number-' + i.rowId);
+            var sumCell = document.createElement('td');
+            sumCell.className = 'row-sum row-' + i.rowId + '-sum';
+            sumCell.innerText = i.value;
+            row.appendChild(sumCell);
+        });
+    },
+    drawColAverages: function drawColAverages(averageValues) {
+        var table = document.querySelector('.table');
+        var averagesRow = table.insertRow(-1);
+        averagesRow.className = 'averages-row';
+        averageValues.forEach(function (i) {
+            var averageValueCell = averagesRow.insertCell(-1);
+            averageValueCell.className = 'column-average column-' + i.colId + '-average';
+            averageValueCell.innerText = i.value;
+        });
+    }
+};
+
+exports.default = TableDrawer;
 
 /***/ })
 /******/ ]);

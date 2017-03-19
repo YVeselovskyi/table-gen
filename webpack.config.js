@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    entry: './public/assets/js/app.js',
+    entry: './public/assets/js/App.js',
     output: { filename: 'bundle.js', path: './public/assets/dist' },
     module: {
         rules: [
